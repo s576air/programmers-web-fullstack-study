@@ -3,4 +3,4 @@
 
 로그인 기능
 
-feature1 <- 이거 feature2에서 실수로 커밋한거임
+첫 번째 기능: feature1
