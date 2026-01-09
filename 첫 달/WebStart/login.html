@@ -3,15 +3,29 @@
     <head>
         <meta charset="UTF-8">
         <title> LOGIN </title>
+        <style>
+            h1 {
+                color:red;
+                text-align:center;
+            }
+            .login_inputs {
+                font-size:25px;
+            }
+            #btn_login {
+                font-size: 25px;
+                width: 100px;
+                height: 40px;
+            }
+        </style>
     </head>
     <body>
         <h1>Login</h1>
         <from>
-            ID: <input type="text">
+            ID: <input class="login_inputs" type="text">
             <br>
-            Password: <input type="password">
+            Password: <input class="login_inputs" type="password">
             <br>
-            <input type="button" value="login">
+            <input id="btn_login" type="button" value="login">
         </from>
     </body>
 </html>
