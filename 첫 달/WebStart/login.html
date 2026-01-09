@@ -19,11 +19,12 @@
         <script>
             /* ID 란에 입력된 값을 팝업 창에 띄우기 */
             function popId() {
-                if (!document.getElementById('txt_id').value) {
-                    // document.getElementById('txt_id').value == ""와 동일
+                let userId = document.getElementById('txt_id').value;
+                if (!userId) {
+                    // userId == ""와 동일
                     alert('아이디를 입력해 주세요.');
                 } else {
-                    alert(document.getElementById('txt_id').value);
+                    alert(userId);
                 }
             }
 
