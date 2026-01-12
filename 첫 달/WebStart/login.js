@@ -22,7 +22,5 @@ function popId() {
 
 // 나만의 함수 만들고, 버튼 클릭하면 호출하기
 function myFunction() {
-    alert('1');
-    alert('2');
-    alert('3');
+    alert('s576ai한재민9기');
 }
