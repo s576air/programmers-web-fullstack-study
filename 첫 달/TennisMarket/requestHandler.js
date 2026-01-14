@@ -42,9 +42,12 @@ function blackRacket(response) {
 }
 
 function order(response) {
+    console.log('order');
+
     response.writeHead(200, {'Content-Type' : 'text/html'});
 
-    mariadb.query('insert into orderlist values(1, ' + new Date().toLocaleDateString + ');', function(err, rows) {
+    let sql = 'insert into orderlist values(1, "' + new Date().toLocaleDateString() + '");'; console.log(sql);
+    mariadb.query(sql, function(err, rows) {
         console.log(rows);
     });
 
@@ -60,7 +63,7 @@ function orderlist(response) {
     mariadb.query("select * from orderlist", function(err, rows) {
         response.write(orderlist_view);
 
-        rows.forEach(element => {
+        rows.forEach(element => { console.log('pid: ' + element.product_id + ', element.order_date: ' + element.order_date);
             response.write(
                 "<tr>" +
                 "<td>" + element.product_id + "</td>" +
