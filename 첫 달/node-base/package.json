@@ -1,8 +1,7 @@
 {
   "dependencies": {
     "express": "^5.2.1",
-    "figlet": "^1.9.4",
-    "swagger": "^0.7.5"
+    "figlet": "^1.9.4"
   },
   "devDependencies": {
     "swagger-jsdoc": "^6.2.8",
