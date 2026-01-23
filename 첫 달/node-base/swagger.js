@@ -29,6 +29,8 @@ module.exports = {
 
 // https://swagger.io/docs/specification/v2_0/basic-structure/
 // https://swagger.io/docs/specification/v2_0/describing-parameters/
+// https://developers.kakao.com/console/app/1365721/config/platform-key
+// 여기의 JS 키 가져가면 됨
 
 /**
  * @swagger
@@ -47,6 +49,7 @@ module.exports = {
  *   get:
  *     summary: 요약2
  */
+
 /**
  * @swagger
  * /boards:
