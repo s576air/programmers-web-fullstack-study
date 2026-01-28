@@ -25,6 +25,8 @@ app.get('/product/:n', function(req, res) {
     });
 });
 
+
+
 app.listen(1234);
 /*
 저는 에러가 안 나서, 해결법만 구경하겠습니다.

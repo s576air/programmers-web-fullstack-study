@@ -1,7 +1,7 @@
 const swaggerUi = require('swagger-ui-express');
 const swaggereJsdoc = require('swagger-jsdoc');
 
-const port = '3922';
+const port = '3925';
 
 const options = {
     swaggerDefinition: {
@@ -31,6 +31,28 @@ module.exports = {
 // https://swagger.io/docs/specification/v2_0/describing-parameters/
 // https://developers.kakao.com/console/app/1365721/config/platform-key
 // 여기의 JS 키 가져가면 됨
+
+/**
+ * @swagger
+ * /follows/{id}:
+ *   delete:
+ *     summary: 언팔로우
+ *     description: body의 유저가 url의 유저를 언팔로우합니다.
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *       - in: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             myId:
+ *               type: number
+ *     responses:
+ *       200:
+ *         description: OK
+ */
 
 /**
  * @swagger
