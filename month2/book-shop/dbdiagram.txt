@@ -1,0 +1,6 @@
+Table users {
+  id integer
+  email varchar
+  username varchar
+  password varchar
+}
