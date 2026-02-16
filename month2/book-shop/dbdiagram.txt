@@ -1,6 +1,28 @@
 Table users {
-  id integer
+  id integer [primary key]
   email varchar
   username varchar
   password varchar
 }
+
+Table books {
+  id integer [primary key]
+  title varchar
+  category_id integer
+  form varchar
+  isbn varchar
+  summary varchar
+  detail text
+  author varchar
+  pages integer
+  index text
+  price integer
+  pub_date date
+}
+
+Table category {
+  id integer [primary key]
+  category_name varchar
+}
+
+Ref: books.category_id > category.id
