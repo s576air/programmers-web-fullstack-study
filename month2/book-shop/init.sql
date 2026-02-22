@@ -20,10 +20,18 @@ CREATE TABLE books (
     contents TEXT,
     price INT NOT NULL,
     pub_date DATE,
-    UNIQUE KEY isbn_key isbn
+    UNIQUE KEY isbn_key(isbn),
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
 )
 
-CREATE TABLE category {
-    id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE category (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(45) NOT NULL
-}
+)
+
+CREATE TABLE likes (
+    user_id INT NOT NULL,
+    liked_book_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (liked_book_id) REFERENCES books(id)
+)

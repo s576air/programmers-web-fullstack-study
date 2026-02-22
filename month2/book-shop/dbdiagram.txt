@@ -8,6 +8,7 @@ Table users {
 Table books {
   id integer [primary key]
   title varchar
+  img integer
   category_id integer
   form varchar
   isbn varchar
@@ -15,14 +16,22 @@ Table books {
   detail text
   author varchar
   pages integer
-  index text
+  content text
   price integer
   pub_date date
 }
 
 Table category {
-  id integer [primary key]
+  category_id integer [primary key]
   category_name varchar
 }
 
+Table likes {
+  user_id integer
+  liked_book_id integer
+}
+
 Ref: books.category_id > category.id
+
+Ref: likes.user_id > users.id
+Ref: likes.liked_book_id > books.id

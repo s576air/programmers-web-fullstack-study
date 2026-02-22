@@ -6,6 +6,7 @@ dotenv.config();
 
 app.listen(process.env.PORT);
 app.use(express.json());
+console.log('server port: ' + process.env.PORT);
 
 let usersRouter = require('./routes/users');
 let booksRouter = require('./routes/books');

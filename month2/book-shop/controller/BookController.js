@@ -7,7 +7,12 @@ const allBooks = (req, res) => {
     limit = parseInt(limit);
     currentPage = parseInt(currentPage);
 
-    let sql = "SELECT * FROM books WHERE 1=1";
+    let sql = `
+    SELECT *, (
+        SELECT count(*) FROM likes WHERE liked_book_id = books.id
+    ) AS likes
+    FROM books
+    WHERE 1=1`;
     let values = [];
 
     // 강의에서는 3가지 경우를 각각 구현함
@@ -42,20 +47,25 @@ const allBooks = (req, res) => {
 };
 
 const bookDetail = (req, res) => {
-    let id = parseInt(req.params.id);
+    let {userId} = req.body;
+    let bookId = parseInt(req.params.id);
 
     const sql = `
-    SELECT * FROM books
-    LEFT JOIN category ON books.category_id = category.id
+    SELECT *,
+        (SELECT count(*) FROM likes WHERE liked_book_id = books.id) AS likes,
+        (SELECT EXISTS (SELECT * FROM likes WHERE user_id = ? AND liked_book_id = ?)) AS liked
+    FROM books
+    LEFT JOIN category ON books.category_id = category.category_id
     WHERE books.id = ?`;
-    conn.query(sql, id, (err, results) => {
+    const values = [userId, bookId, bookId];
+    conn.query(sql, values, (err, results) => {
         if (err) {
             console.log(err);
             return res.status(StatusCodes.BAD_REQUEST).end();
         }
 
         if (results[0]) {
-            return res.status(StatusCodes.OK).json(results);
+            return res.status(StatusCodes.OK).json(results[0]);
         } else {
             return res.status(StatusCodes.BAD_REQUEST).end();
         }
