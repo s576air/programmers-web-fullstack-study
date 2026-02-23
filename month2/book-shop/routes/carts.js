@@ -1,19 +1,13 @@
 const express = require('express');
 let router = express.Router();
+let {
+    addToCart,
+    getCartItems,
+    removeCartItem
+} = require('../controller/CartController');
 
-// 장바구니 담기
-router.post('/', (req, res) => {
-    res.send('장바구니 담기');
-});
-
-// 장바구니 조회
-router.get('/', (req, res) => {
-    res.send('장바구니 조회');
-});
-
-// 장바구니 도서 삭제
-router.get('/:id', (req, res) => {
-    res.send('장바구니 도서 삭제');
-});
+router.post('/', addToCart); // 장바구니 담기
+router.get('/', getCartItems); // 장바구니 조회
+router.get('/:id', removeCartItem); // 장바구니 도서 삭제
 
 module.exports = router;

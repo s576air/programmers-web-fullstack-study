@@ -31,7 +31,17 @@ Table likes {
   liked_book_id integer
 }
 
+Table cartItems {
+  id integer
+  book_id integer
+  quantity integer
+  user_id integer
+}
+
 Ref: books.category_id > category.id
 
 Ref: likes.user_id > users.id
 Ref: likes.liked_book_id > books.id
+
+Ref: cartItems.book_id > books.id
+Ref: cartItems.user_id > users.id

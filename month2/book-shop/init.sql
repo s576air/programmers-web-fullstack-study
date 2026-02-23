@@ -35,3 +35,12 @@ CREATE TABLE likes (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (liked_book_id) REFERENCES books(id)
 )
+
+CREATE TABLE cart_items (
+    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    book_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    user_id INT NOT NULL,
+    CONSTRAINT fk_cart_items_books_id FOREIGN KEY (book_id) REFERENCES books(id),
+    CONSTRAINT fk_cart_items_users_id FOREIGN KEY (user_id) REFERENCES users(id)
+)

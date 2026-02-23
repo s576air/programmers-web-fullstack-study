@@ -7,7 +7,7 @@ const addLike = (req, res) => {
 
     const sql = "INSERT INTO likes(user_id, liked_book_id) VALUES(?, ?)";
     let values = [userId, id];
-    conn.query(conn, values, (err, results) => {
+    conn.query(sql, values, (err, results) => {
         if(err) {
             console.log(err);
             return res.status(StatusCodes.BAD_REQUEST).end();
@@ -23,7 +23,7 @@ const removeLike = (req, res) => {
 
     const sql = "DELETE FROM likes WHERE user_id = ? AND liked_book_id = ?";
     let values = [userId, id];
-    conn.query(conn, values, (err, results) => {
+    conn.query(sql, values, (err, results) => {
         if(err) {
             console.log(err);
             return res.status(StatusCodes.BAD_REQUEST).end();
