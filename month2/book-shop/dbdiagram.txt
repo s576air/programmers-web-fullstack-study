@@ -38,6 +38,29 @@ Table cartItems {
   user_id integer
 }
 
+Table orders {
+  id integer [primary key]
+  delivery_id integer
+  user_id integer
+  book_title varchar
+  total_quantity integer
+  created_at timestamp
+}
+
+Table orderedBook {
+  id integer [primary key]
+  order_id integer
+  book_id integer
+  quantity integer
+}
+
+Table delivery {
+  id integer [primary key]
+  order_id varchar
+  receiver varchar
+  content varchar
+}
+
 Ref: books.category_id > category.id
 
 Ref: likes.user_id > users.id
@@ -45,3 +68,11 @@ Ref: likes.liked_book_id > books.id
 
 Ref: cartItems.book_id > books.id
 Ref: cartItems.user_id > users.id
+
+Ref: orders.delivery_id > delivery.id
+Ref: orders.user_id > users.id
+
+Ref: orderedBook.order_id > orders.id
+Ref: orderedBook.book_id > books.id
+
+Ref: delivery.order_id > orders.id

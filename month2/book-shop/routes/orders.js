@@ -1,19 +1,13 @@
 const express = require('express');
 let router = express.Router();
+let {
+    order,
+    getOrders,
+    getOrderDetail
+} = require('../controller/OrderController');
 
-// 주문 하기
-router.get('/', (req, res) => {
-    res.send('주문 하기');
-});
-
-// 주문 목록 조회
-router.get('/', (req, res) => {
-    res.send('주문 목록 조회');
-});
-
-// 주문 상세 상품 조회
-router.get('/:id', (req, res) => {
-    res.send('주문 상세 상품 조회');
-});
+router.get('/', order); // 주문 하기
+router.get('/', getOrders); // 주문 목록 조회
+router.get('/:id', getOrderDetail); // 주문 상세 상품 조회
 
 module.exports = router;
