@@ -4,9 +4,12 @@ async-await
 */
 
 async function f() {
-    return 7;
-    // async 함수는 무조건 Promise 객체를 반환
-    // - 반환값이 Promise가 아니면, Promise로 감싸서 반환
+    let promise = new Promise(function(resolve, reject) {
+        setTimeout(() => resolve('완료!'), 300);
+    })
+
+    let result = await promise;
+    return result;
 }
 
 f().then(
