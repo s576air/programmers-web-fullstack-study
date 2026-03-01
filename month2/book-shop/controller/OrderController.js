@@ -8,7 +8,7 @@ delivery: {
     contact: string
 }
 */
-const order = (req, res) => {
+const order = async (req, res) => {
     // 책 제목을 바로 body로 받는건..
     const {items, delivery, totalQuantity, totalPrice, userId, firstBookTitle} = req.body;
 
@@ -17,7 +17,7 @@ const order = (req, res) => {
 
     let sql = "INSERT INTO delivery(address, receiver, contact) VALUES(?, ?, ?)";
     let values = [delivery.address, delivery.receiver, delivery.contact];
-    conn.query(sql, values, (err, results) => {
+    let [results] = await conn.query(sql, values, (err, results) => {
         if(err) {
             console.log(err);
             return res.status(StatusCodes.BAD_REQUEST).end();
@@ -25,22 +25,23 @@ const order = (req, res) => {
 
         delivery_id = results.insertId;
 
-        sql =
-        `INSERT INTO orders (book_title, total_quantity, total_price, user_id, delivery_id) 
-        VALUES (?, ?, ?, ?, ?)`;
-        values = [firstBookTitle, totalQuantity, totalPrice, userId, delivery_id];
-        conn.query(sql, values, (err, results) => {
-            if(err) {
-                console.log(err);
-                return res.status(StatusCodes.BAD_REQUEST).end();
-            }
 
-            order_id = results.insertId;
-
-            return res.status(StatusCodes.OK).json(results);
-        })
     })
 
+    sql =
+    `INSERT INTO orders (book_title, total_quantity, total_price, user_id, delivery_id) 
+    VALUES (?, ?, ?, ?, ?)`;
+    values = [firstBookTitle, totalQuantity, totalPrice, userId, delivery_id];
+    conn.query(sql, values, (err, results) => {
+        if(err) {
+            console.log(err);
+            return res.status(StatusCodes.BAD_REQUEST).end();
+        }
+
+        order_id = results.insertId;
+
+        return res.status(StatusCodes.OK).json(results);
+    })
     // sql =
     //     `INSERT INTO orderedBook(order_id, book_id, quantity)
     //     VALUES (?)`
