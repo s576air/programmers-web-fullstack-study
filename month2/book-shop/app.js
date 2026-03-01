@@ -4,6 +4,7 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 
+console.log('port: ' + process.env.PORT);
 app.listen(process.env.PORT);
 app.use(express.json());
 console.log('server port: ' + process.env.PORT);
