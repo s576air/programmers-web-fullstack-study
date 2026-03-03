@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto'); // 기본 모듈, 암호화
 require('dotenv').config();
 
-const join = (req, res) => {
+const join = async (req, res) => {
     const {email, password} = req.body;
 
     // 비밀번호 암호화
@@ -16,49 +16,51 @@ const join = (req, res) => {
     const sql = 'INSERT INTO users(email, password, salt) VALUES(?, ?, ?)';
     const values = [email, hashPassword, salt];
 
-    conn.query(sql, values, (err, results) => {
-        if (err) {
-            console.log(err);
-            return res.status(StatusCodes.BAD_REQUEST).end();
-        }
+    let [results] = await conn.query(sql, values);
 
-        return res.status(StatusCodes.CREATED).json(results);
-    })
+    return res.status(StatusCodes.CREATED).json(results);
 }
 
-const login = (req, res) => {
+const login = async (req, res) => {
     const {email, password} = req.body;
 
     const sql = 'SELECT * FROM users WHERE email = ?';
 
-    conn.query(sql, email, (err, results) => {
-        if (err) {
-            console.log(err);
-            return res.status(StatusCodes.BAD_REQUEST).end();
-        }
-        const user = results[0];
+    let [results] = await conn.query(sql, email);
+    console.log(results);
+
+    const user = results[0];
+
+    if (user == null) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            error: '이메일이 잘못됨'
+        });
+    }
+    
+    const hashPassword = crypto.pbkdf2Sync(password, user.salt, 10000, 16, 'sha512').toString('base64');
+
+    console.log(user);
+    if (user && user.password == hashPassword) {
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email
+            },
+            process.env.PRIVATE_KEY,
+            { expiresIn: '5m' }
+        );
+
+        res.cookie('authorization', token, {
+            httpOnly: true
+        })
+        console.log('token: ' + token);
         
-        const hashPassword = crypto.pbkdf2Sync(password, user.salt, 10000, 16, 'sha512').toString('base64');
-
-        if (user && user.password == hashPassword) {
-            const token = jwt.sign(
-                { email: user.email },
-                process.env.PRIVATE_KEY,
-                { expiresIn: '5m' }
-            );
-
-            res.cookie('token', token, {
-                httpOnly: true
-            })
-            console.log('token: ' + token);
-            
-            return res.status(StatusCodes.OK).json(results);
-        } else {
-            // 401: Unauthorized 인증 안됨
-            // 403: Forbidden 접근 권한 없음
-            return res.status(StatusCodes.UNAUTHORIZED).end();
-        }
-    })
+        return res.status(StatusCodes.OK).json(results);
+    } else {
+        // 401: Unauthorized 인증 안됨
+        // 403: Forbidden 접근 권한 없음
+        return res.status(StatusCodes.UNAUTHORIZED).end();
+    }
 };
 
 const passwordResetRequest = (req, res) => {

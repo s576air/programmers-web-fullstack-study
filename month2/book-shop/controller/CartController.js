@@ -1,9 +1,26 @@
+const jwt = require('jsonwebtoken');
 const conn = require('../mariadb');
 const {StatusCodes} = require('http-status-codes');
+require('dotenv').config();
 
 // 장바구니 담기
 const addToCart = (req, res) => {
-    const {bookId, quantity, userId} = req.body;
+    const {bookId, quantity} = req.body;
+
+    let token = decodeJwt(req);
+
+    // 자동완성으로 앞에 jwt.이 붙었다..? 붙이는게 맞았다.
+    if (token instanceof jwt.TokenExpiredError) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "로그인 세션이 만료되었습니다. 다시 로그인 하세요."
+        });
+    } else if (token instanceof jwt.JsonWebTokenError) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "잘못된 토큰입니다."
+        });
+    }
+    let {userId} = token;
+    // return이 있으니 else는 필요없을 것 같아 생략
 
     const sql = "INSERT INTO cart_items(book_id, quantity, user_id) VALUES(?, ?, ?)";
     let values = [bookId, quantity, userId];
@@ -19,7 +36,20 @@ const addToCart = (req, res) => {
 
 // 장바구니 아이템 목록 조회
 const getCartItems = (req, res) => {
-    const {userId, selected} = req.body;
+    const {selected} = req.body;
+
+    let token = decodeJwt(req);
+
+    if (token instanceof jwt.TokenExpiredError) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "로그인 세션이 만료되었습니다. 다시 로그인 하세요."
+        });
+    } else if (token instanceof jwt.JsonWebTokenError) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "잘못된 토큰입니다."
+        });
+    }
+    let {userId} = token;
 
     const sql = `
     SELECT c.id, c.book_id, c.quantity, b.title, b.summary, b.price
@@ -38,10 +68,10 @@ const getCartItems = (req, res) => {
 
 // 장바구니 아이템 삭제
 const removeCartItem = (req, res) => {
-    const {id} = req.params;
+    const cartItemId = req.params.id;
 
     const sql = 'DELETE FROM cart_items WHERE id = ?';
-    conn.query(sql, id, (err, results) => {
+    conn.query(sql, cartItemId, (err, results) => {
         if(err) {
             console.log(err);
             return res.status(StatusCodes.BAD_REQUEST).end();
@@ -50,6 +80,20 @@ const removeCartItem = (req, res) => {
         return res.status(StatusCodes.OK).json(results);
     })
 };
+
+function decodeJwt(req) {
+    try {
+        let token = req.headers['authorization'];
+        let decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY);
+        
+        return decodedJwt;
+    } catch (err) {
+        console.log(err.name);
+        console.log(err.message);
+
+        return err;
+    }
+}
 
 module.exports = {
     addToCart,
