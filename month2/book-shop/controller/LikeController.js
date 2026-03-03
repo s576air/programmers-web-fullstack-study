@@ -1,7 +1,7 @@
+const decodeJwt = require('../auth');
 const jwt = require('jsonwebtoken');
 const conn = require('../mariadb');
 const {StatusCodes} = require('http-status-codes');
-require('dotenv').config();
 
 const addLike = async (req, res) => {
     const bookId = req.params.id;
@@ -52,22 +52,6 @@ const removeLike = (req, res) => {
         return res.status(StatusCodes.OK).json(results);
     })
 };
-
-// 꺼내기 + 복호화라 더 명확한 이름을 쓰는 것이 좋음. ensureAuthorization 등
-function decodeJwt(req) {
-    try {
-        let token = req.headers['authorization'];
-        console.log('req token: ', token);
-        let decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY);
-        
-        return decodedJwt;
-    } catch (err) {
-        console.log(err.name);
-        console.log(err.message);
-
-        return err;
-    }
-}
 
 module.exports = {
     addLike,

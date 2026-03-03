@@ -1,7 +1,7 @@
+const decodeJwt = require('../auth');
 const jwt = require('jsonwebtoken');
 const conn = require('../mariadb');
 const {StatusCodes} = require('http-status-codes');
-require('dotenv').config();
 
 // 장바구니 담기
 const addToCart = (req, res) => {
@@ -49,14 +49,22 @@ const getCartItems = (req, res) => {
             message: "잘못된 토큰입니다."
         });
     }
-    let {userId} = token;
 
-    const sql = `
+    let {userId} = token;
+    
+    let sql = `
     SELECT c.id, c.book_id, c.quantity, b.title, b.summary, b.price
     FROM cart_items c
     LEFT JOIN books b ON cart_items.book_id = books.id
-    WHERE b.user_id = ? AND c.id IN (?)`;
-    conn.query(sql, [userId, selected], (err, results) => {
+    WHERE b.user_id = ?`;
+    values = [userId];
+
+    if (selected) {
+        sql += ' AND c.id IN (?)';
+        values.push(selected);
+    }
+
+    conn.query(sql, values, (err, results) => {
         if(err) {
             console.log(err);
             return res.status(StatusCodes.BAD_REQUEST).end();
@@ -80,20 +88,6 @@ const removeCartItem = (req, res) => {
         return res.status(StatusCodes.OK).json(results);
     })
 };
-
-function decodeJwt(req) {
-    try {
-        let token = req.headers['authorization'];
-        let decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY);
-        
-        return decodedJwt;
-    } catch (err) {
-        console.log(err.name);
-        console.log(err.message);
-
-        return err;
-    }
-}
 
 module.exports = {
     addToCart,
