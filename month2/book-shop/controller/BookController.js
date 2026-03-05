@@ -1,14 +1,24 @@
+const decodeJwt = require('../auth');
+const jwt = require('jsonwebtoken');
 const conn = require('../mariadb');
 const {StatusCodes} = require('http-status-codes');
 
-const allBooks = (req, res) => {
+/**
+ * Response Body
+ * {
+ *     books: {id, title, img, summary, author, price, likes, pubDate}[],
+ *     pagination: {currentPage, totalBooks}
+ * }
+*/
+const allBooks = async (req, res) => {
+    let allBookRes = {};
     let { category_id, news, limit, currentPage } = req.query;
     
     limit = parseInt(limit);
     currentPage = parseInt(currentPage);
 
     let sql = `
-    SELECT *, (
+    SELECT SQL_CALC_FOUND_ROWS *, (
         SELECT count(*) FROM likes WHERE liked_book_id = books.id
     ) AS likes
     FROM books
@@ -32,23 +42,50 @@ const allBooks = (req, res) => {
     sql += " LIMIT ? OFFSET ?";
     values.push(limit, offset);
 
-    conn.query(sql, values, (err, results) => {
-        if (err) {
-            console.log(err);
-            return res.status(StatusCodes.BAD_REQUEST).end();
-        }
+    let [results] = await conn.query(sql, values);
+    if (!results.length) return res.status(StatusCodes.BAD_REQUEST).end();
+    allBookRes.books = results;
 
-        if (results.length) {
-            return res.status(StatusCodes.OK).json(results);
-        } else {
-            return res.status(StatusCodes.NOT_FOUND).end();
-        }
-    })    
+    sql = "SELECT found_rows()";
+    let [results2] = await conn.query(sql);
+    let pagination = {};
+    pagination.currentPage = currentPage;
+    pagination.totalCount = results2[0]['found_rows()'];
+
+    allBookRes.pagination = pagination;
+
+    return res.status(StatusCodes.OK).json(allBookRes);
 };
 
-const bookDetail = (req, res) => {
-    let {userId} = req.body;
+const bookDetail = async (req, res) => {
+    // 로그인 => liked 추가
+    // 비로그인 => liked 빼기
     let bookId = parseInt(req.params.id);
+
+    let token = decodeJwt(req);
+    
+    if (token instanceof jwt.TokenExpiredError) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "로그인 세션이 만료되었습니다. 다시 로그인 하세요."
+        });
+    } else if (token instanceof jwt.JsonWebTokenError) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "잘못된 토큰입니다."
+        });
+    } else if (token instanceof ReferenceError) {
+        const sql = `
+        SELECT *, (SELECT count(*) FROM likes WHERE liked_book_id = books.id) AS likes
+        FROM books
+        LEFT JOIN category ON books.category_id = category.category_id
+        WHERE books.id = ?`;
+        let results = await conn.query(sql, bookId);
+        if (results[0]) {
+            return res.status(StatusCodes.OK).json(results[0]);
+        } else {
+            return res.status(StatusCodes.BAD_REQUEST).end();
+        }
+    }
+    let userId = token.id;
 
     const sql = `
     SELECT *,
@@ -58,19 +95,12 @@ const bookDetail = (req, res) => {
     LEFT JOIN category ON books.category_id = category.category_id
     WHERE books.id = ?`;
     const values = [userId, bookId, bookId];
-    conn.query(sql, values, (err, results) => {
-        if (err) {
-            console.log(err);
-            return res.status(StatusCodes.BAD_REQUEST).end();
-        }
-
-        if (results[0]) {
-            return res.status(StatusCodes.OK).json(results[0]);
-        } else {
-            return res.status(StatusCodes.BAD_REQUEST).end();
-        }
-        
-    })
+    let results = await conn.query(sql, values);
+    if (results[0]) {
+        return res.status(StatusCodes.OK).json(results[0]);
+    } else {
+        return res.status(StatusCodes.BAD_REQUEST).end();
+    }
 };
 
 module.exports = {

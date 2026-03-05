@@ -1,3 +1,5 @@
+const decodeJwt = require('../auth');
+const jwt = require('jsonwebtoken');
 const conn = require('../mariadb');
 const {StatusCodes} = require('http-status-codes');
 
@@ -10,7 +12,20 @@ delivery: {
 */
 const order = async (req, res) => {
     // 책 제목을 바로 body로 받는건..
-    const {items, delivery, totalQuantity, totalPrice, userId, firstBookTitle} = req.body;
+    const {items, delivery, totalQuantity, totalPrice, firstBookTitle} = req.body;
+
+    let token = decodeJwt(req);
+    
+    if (token instanceof jwt.TokenExpiredError) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "로그인 세션이 만료되었습니다. 다시 로그인 하세요."
+        });
+    } else if (token instanceof jwt.JsonWebTokenError) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "잘못된 토큰입니다."
+        });
+    }
+    let userId = token.id;
 
     // 배달 추가
     let sql = "INSERT INTO delivery(address, receiver, contact) VALUES(?, ?, ?)";
@@ -36,9 +51,9 @@ const order = async (req, res) => {
     orderItems.forEach((item) => {
         values.push([order_id, item.book_id, item.quantity])
     })
-    results = await conn.query(sql, [values]); // 다중 insert는 최근 문법이라
+    await conn.query(sql, [values]); // 다중 insert는 최근 문법이라
     
-    result = await deleteCartItems(conn, items);
+    results = await deleteCartItems(conn, items);
 
     return res.status(StatusCodes.OK).json(results[0]); 
 }
@@ -51,6 +66,18 @@ const deleteCartItems = async (conn, items) => {
 }
 
 const getOrders = async (req, res) => {
+    let token = decodeJwt(req);
+    
+    if (token instanceof jwt.TokenExpiredError) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "로그인 세션이 만료되었습니다. 다시 로그인 하세요."
+        });
+    } else if (token instanceof jwt.JsonWebTokenError) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "잘못된 토큰입니다."
+        });
+    }
+
     let sql =
     `SELECT o.id, o.book_title, o.total_quantity, o.total_price, o.create_at, d.address, d.receiver, d.contact
     FROM orders o
@@ -60,13 +87,25 @@ const getOrders = async (req, res) => {
 }
 
 const getOrderDetail = async (req, res) => {
-    let {id} = req.params;
+    let token = decodeJwt(req);
+    
+    if (token instanceof jwt.TokenExpiredError) {
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "로그인 세션이 만료되었습니다. 다시 로그인 하세요."
+        });
+    } else if (token instanceof jwt.JsonWebTokenError) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "잘못된 토큰입니다."
+        });
+    }
+
+    let orderId = req.params.id;
     let sql = 
     `SELECT ob.book_id, b.title, b.author, b.price, ob.quantity
     FROM orderedBook ob
     LEFT JOIN books b ON ob.book_id = b.id
     WHERE order_id = ?`;
-    let [rows] = await conn.query(sql, [id]);
+    let [rows] = await conn.query(sql, [orderId]);
     return res.status(StatusCodes.OK).json(rows);
 }
 

@@ -5,6 +5,7 @@ require('dotenv').config();
 function decodeJwt(req) {
     try {
         let token = req.headers['authorization'];
+        if (token == null) throw new ReferenceError('jwt 필요');
         let decodedJwt = jwt.verify(token, process.env.PRIVATE_KEY);
         
         return decodedJwt;
