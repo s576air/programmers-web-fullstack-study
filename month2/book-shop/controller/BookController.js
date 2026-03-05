@@ -44,6 +44,10 @@ const allBooks = async (req, res) => {
 
     let [results] = await conn.query(sql, values);
     if (!results.length) return res.status(StatusCodes.BAD_REQUEST).end();
+    results.map(function(result) {
+        result.pubDate = result.pub_date;
+        delete result.pub_date;
+    })
     allBookRes.books = results;
 
     sql = "SELECT found_rows()";

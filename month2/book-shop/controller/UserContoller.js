@@ -18,7 +18,11 @@ const join = async (req, res) => {
 
     let [results] = await conn.query(sql, values);
 
-    return res.status(StatusCodes.CREATED).json(results);
+    if (results.affectedRows) {
+        return res.status(StatusCodes.CREATED).json(results);
+    } else {
+        return res.status(StatusCodes.BAD_REQUEST).end();
+    }
 }
 
 const login = async (req, res) => {
