@@ -5,6 +5,7 @@ import './App.css';
 // import FuncCom from './FuncCom';
 import TodoList from './Todolist';
 import Clock from './Timer';
+import MyWeather from './MyWeather';
 
 function App() {
   //let _e = React.createElement("div", null, "Hello, 리액트!",
@@ -25,6 +26,7 @@ function App() {
     <div className='container'>
       <TodoList></TodoList>
       <Clock></Clock>
+      <MyWeather weather='맑음'>일기예보</MyWeather>
     </div>
   );
 
