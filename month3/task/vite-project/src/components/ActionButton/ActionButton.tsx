@@ -14,7 +14,7 @@ const ActionButton: React.FC<TActionButtonProps> = ({
 }) => {
   const list = listId != null;
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const buttonText = list != null ? "새로운 리스트 등록" : "새로운 일 등록";
+  const buttonText = list ? "새로운 일 등록" : "새로운 리스트 등록";
 
   return isFormOpen ? (
     <DropDownForm
