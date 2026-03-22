@@ -17,7 +17,8 @@ const DropDownForm: React.FC<TDropDownFormProps> = ({
     listId,
     setIsFormOpen
 }) => {
-    const list = listId != null;
+    // 어디서 실수가 있었는지 모르겠는데, 아무튼 아래처럼 바꾸니 잘 동작하네요..
+    const list = listId == null; 
     const dispatch = useTypedDispatch();
     const [text, setText] = useState('');
     const formPlaceholder = list ?
