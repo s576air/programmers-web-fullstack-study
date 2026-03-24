@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import './App.css';
+import { closestCenter, DndContext } from '@dnd-kit/core';
+import { arrayMove, SortableContext } from '@dnd-kit/sortable';
+import {} from '@dnd-kit/utilities';
+import { Item } from './Item';
 
 const finalSpaceCharacters = [
   {
@@ -18,24 +22,34 @@ const finalSpaceCharacters = [
 
 function App() {
   const [characters, setCharacters] = useState(finalSpaceCharacters);
+  
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    if (active.id !== over.id) {
+      const oldIndex = characters.findIndex(c => c.id === active.id);
+      const newIndex = characters.findIndex(c => c.id === over.id);
+
+      setCharacters(arrayMove(characters, oldIndex, newIndex));
+    }
+  }
+
   return (
     <div className="App">
       <header className="App-header">
         <h1>Final Space Charactors</h1>
 
-        {/* <darg drop context> */}
-        <ul className='characters'>
-          {characters.map(({id, name}, index) => {
-            return (
-              <li> {/* draggable */}
-                <p>
-                  {name}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
-        {/* <darg drop context> */}
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <ul className='characters'>
+            <SortableContext items={characters.map(c => c.id)}>
+              {characters.map(({id, name}) => (
+                <Item key={id} id={id} name={name} />
+              ))}
+            </SortableContext>
+          </ul>
+        </DndContext>
       </header>
     </div>
   );
