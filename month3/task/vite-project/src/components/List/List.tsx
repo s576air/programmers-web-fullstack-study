@@ -8,6 +8,8 @@ import { addLog } from "../../store/slices/loggerSlice";
 import { v4 } from "uuid";
 import { setModalData } from "../../store/slices/modalSlice";
 import { deleteButton, header, listWrapper, name } from "./List.css";
+import { SortableContext, useSortable } from '@dnd-kit/sortable';
+import { CSS } from "@dnd-kit/utilities";
 
 type TListProps = {
   boardId: string;
@@ -43,33 +45,50 @@ const List: React.FC<TListProps> = ({
   }
 
   return (
-    <div className={listWrapper}>
-      <div className={header}>
-        <div className={name}>{list.listName}</div>
-        <GrSubtract
-          className={deleteButton}
-          onClick={() => handleListDelete(list.listId)}
-        />
-      </div>
-      {list.tasks.map((task, index) => (
-        <div
-          onClick={() => handleTaskChange(boardId, list.listId, task)}
-          key={task.taskId}
-        >
-          <Task
-            taskName={task.taskName}
-            taskDescription={task.taskDescription}
-            boardId={boardId}
-            id={task.taskId}
-            index={index}
+    <SortableContext items={list.tasks.map(t => t.taskId)}>
+      <div className={listWrapper}>
+        <div className={header}>
+          <div className={name}>{list.listName}</div>
+          <GrSubtract
+            className={deleteButton}
+            onClick={() => handleListDelete(list.listId)}
           />
         </div>
-      ))}
-      <ActionButton
-        boardId={boardId}
-        listId={list.listId}
-      />
-    </div>
+        {list.tasks.map((task, index) => {
+          const {
+            setNodeRef,
+            listeners,
+            attributes,
+            transform,
+            transition
+          } = useSortable({ id: task.taskId });
+          
+          const style = {
+            transform: CSS.Transform.toString(transform),
+            transition,
+            cursor: 'grab'
+          }
+          return (
+            <div ref={setNodeRef} style={style} {...listeners} {...attributes}
+              onClick={() => handleTaskChange(boardId, list.listId, task)}
+              key={task.taskId}
+            >
+              <Task
+                taskName={task.taskName}
+                taskDescription={task.taskDescription}
+                boardId={boardId}
+                id={task.taskId}
+                index={index}
+              />
+            </div>
+          )
+        })}
+        <ActionButton
+          boardId={boardId}
+          listId={list.listId}
+        />
+      </div>
+    </SortableContext>
   )
 }
 

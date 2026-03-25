@@ -2,7 +2,6 @@ import { useState } from 'react';
 import './App.css';
 import { closestCenter, DndContext } from '@dnd-kit/core';
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
-import {} from '@dnd-kit/utilities';
 import { Item } from './Item';
 
 const finalSpaceCharacters = [

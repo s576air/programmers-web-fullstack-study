@@ -9,6 +9,8 @@ import LoggerModal from './components/LoggerModal/LoggerModal';
 import { deleteBoard } from './store/slices/boardsSlice';
 import { addLog } from './store/slices/loggerSlice';
 import { v4 } from 'uuid';
+import { closestCenter, DndContext, type DragEndEvent } from '@dnd-kit/core';
+// import { arrayMove } from '@dnd-kit/sortable';
 
 function App() {
   const dispatch = useTypedDispatch();
@@ -50,6 +52,19 @@ function App() {
     }
   };
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    if (active.id !== over.id) {
+    //   const oldIndex = characters.findIndex(c => c.id === active.id);
+    //   const newIndex = characters.findIndex(c => c.id === over.id);
+
+    //   setCharacters(arrayMove(characters, oldIndex, newIndex));
+    }
+  }
+
   return (
     <div className={appContainer}>
       {isLoggerOpen ? <LoggerModal setIsLoggerOpen={setIsLoggerOpen} /> : null}
@@ -60,9 +75,10 @@ function App() {
       />
 
       <div className={board}>
-        <ListsContainer lists={lists} boardId={getActiveBoard.boardId} />
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <ListsContainer lists={lists} boardId={getActiveBoard.boardId} />
+        </DndContext>
       </div>
-
       <div className={buttons}>
         <button className={deleteBoardButton} onClick={handleDeleteBoard}>
           이 게시판 삭제하기

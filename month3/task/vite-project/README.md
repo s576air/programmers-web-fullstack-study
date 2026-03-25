@@ -4,6 +4,7 @@ react react-dom vite @vitejs/plugin-react
 @reduxjs/toolkit redux clsx @vanilla-extract/css @vanilla-extract/css-utils @vanilla-extract/vite-plugin react-icons uuid  react-redux
 
 react-beautiful-dnd -> dnd-kit
+npm install @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 
 npm install -D @types/react @types/react-dom
 
