@@ -10,6 +10,7 @@ import { setModalData } from "../../store/slices/modalSlice";
 import { deleteButton, header, listWrapper, name } from "./List.css";
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from "@dnd-kit/utilities";
+import type React from "react";
 
 type TListProps = {
   boardId: string;
@@ -35,15 +36,6 @@ const List: React.FC<TListProps> = ({
     )
   }
 
-  const handleTaskChange = (
-    boardId: string,
-    listId: string,
-    task: ITask
-  ) => {
-    dispatch(setModalData({boardId, listId, task}));
-    dispatch(setModalActive(true));
-  }
-
   return (
     <SortableContext items={list.tasks.map(t => t.taskId)}>
       <div className={listWrapper}>
@@ -55,33 +47,7 @@ const List: React.FC<TListProps> = ({
           />
         </div>
         {list.tasks.map((task, index) => {
-          const {
-            setNodeRef,
-            listeners,
-            attributes,
-            transform,
-            transition
-          } = useSortable({ id: task.taskId });
-          
-          const style = {
-            transform: CSS.Transform.toString(transform),
-            transition,
-            cursor: 'grab'
-          }
-          return (
-            <div ref={setNodeRef} style={style} {...listeners} {...attributes}
-              onClick={() => handleTaskChange(boardId, list.listId, task)}
-              key={task.taskId}
-            >
-              <Task
-                taskName={task.taskName}
-                taskDescription={task.taskDescription}
-                boardId={boardId}
-                id={task.taskId}
-                index={index}
-              />
-            </div>
-          )
+          return <Item task={task} boardId={boardId} index={index} listId={list.listId}></Item>
         })}
         <ActionButton
           boardId={boardId}
@@ -91,5 +57,60 @@ const List: React.FC<TListProps> = ({
     </SortableContext>
   )
 }
+
+type TItemProps = {
+  boardId: string;
+  task: ITask;
+  index: number;
+  listId: string;
+}
+
+const Item: React.FC<TItemProps> = ({
+  boardId,
+  task,
+  index,
+  listId
+}) => {
+  const dispatch = useTypedDispatch();
+  
+  const {
+    setNodeRef,
+    listeners,
+    attributes,
+    transform,
+    transition
+  } = useSortable({ id: task.taskId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    cursor: 'grab'
+  }
+
+  const handleTaskChange = (
+    boardId: string,
+    listId: string,
+    task: ITask
+  ) => {
+    dispatch(setModalData({boardId, listId, task}));
+    dispatch(setModalActive(true));
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes}
+      onClick={() => handleTaskChange(boardId, listId, task)}
+      key={task.taskId}
+    >
+      <Task
+        taskName={task.taskName}
+        taskDescription={task.taskDescription}
+        boardId={boardId}
+        id={task.taskId}
+        index={index}
+      />
+    </div>
+  );
+        
+};
 
 export default List;

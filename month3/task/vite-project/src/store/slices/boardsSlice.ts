@@ -36,6 +36,13 @@ type TDeleteBoardAction = {
     boardId: string;
 }
 
+// type TSortAction = {
+//     droppableIdStart: string;
+//     droppableIndexStart: number;
+//     droppableIndexEnd: number;
+//     boardIndex: number;
+// }
+
 const initialState: TBoardsState = {
     modalActive: false,
     boardArray: [
@@ -179,6 +186,22 @@ const boardsSlice = createSlice({
         setModalActive: (state, {payload}: PayloadAction<boolean>) => {
             state.modalActive = payload
         },
+
+        // dnd는 포기했으므로 스킵!
+        // sort: (state, {payload}: PayloadAction<TSortAction>) => {
+        //     const list = state.boardArray[payload.boardIndex].lists.find(
+        //         list => list.listId === payload.droppableIdStart
+        //     )
+
+        //     const card = list?.tasks.splice(payload.droppableIndexStart, 1);
+        //     list?.tasks.splice(payload.droppableIndexEnd, 0, ...card!);
+
+        //     if (payload.droppableIdStart !== payload.droppableIndexEnd) {
+        //         const listStart = state.boardArray[payload.boardIndex].lists.find(
+        //             list => list.listId === payload.droppableIdStart
+        //         )
+        //     }
+        // },
     }
 });
 

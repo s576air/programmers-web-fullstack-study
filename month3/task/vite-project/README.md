@@ -12,3 +12,5 @@ npm install -D @types/react @types/react-dom
 react-beautiful-dnd는 유지보수가 중단된 구 라이브러리라 못 씀
 
 cd month3/task/vite-project
+
+npm i firebase
