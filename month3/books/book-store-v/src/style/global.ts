@@ -5,10 +5,13 @@ interface Props {
     themeName: string;
 }
 
-export const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle<Props>`
 body {
     padding: 0;
     margin: 0;
+    background-color: ${(props) =>
+        props.themeName === "light" ? "white" : "black"
+    }
 }
 
 h1 {
@@ -16,9 +19,8 @@ h1 {
 }
 
 * {
-    color: ${(props) => props.themeName === "light" ?
-        "black" :
-        "white"
+    color: ${(props) =>
+        props.themeName === "light" ? "black" : "white"
     };
 }
 `;
