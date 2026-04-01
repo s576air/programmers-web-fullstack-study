@@ -13,3 +13,9 @@ npm install -D @testing-library/react
 npm install -D vitest
 
 npm i react-icons
+
+npm install react-router-dom @types/react-router-dom
+
+npm i axios
+
+npm i react-hook-form
