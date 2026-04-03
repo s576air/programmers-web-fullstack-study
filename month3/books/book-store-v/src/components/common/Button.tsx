@@ -10,7 +10,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Button({
-    children, size, scheme, disabled, isLoading
+    children, size, scheme, disabled, isLoading, ...props
 }: Props) {
     return (
         <ButtonStyle
@@ -18,6 +18,7 @@ export function Button({
             scheme={scheme}
             disabled={disabled}
             isLoading={isLoading}
+            {...props}
         >
             {children}
         </ButtonStyle>

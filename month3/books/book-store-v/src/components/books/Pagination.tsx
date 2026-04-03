@@ -1,8 +1,49 @@
 import styled from 'styled-components'
+import type { Pagination as IPagination } from '../../models/pagination.model';
+import Button from '../common/Button';
+import { LIMIT } from '../../constants/pagination';
+import { useSearchParams } from 'react-router-dom';
+import { QUERYSTRINGS } from '../../constants/querystring';
 
-const Pagination = () => {
+interface Props {
+  pagination: IPagination;
+}
+
+const Pagination = ({pagination}: Props) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const {totalCount, currentPage} = pagination;
+  const pages: number = Math.ceil(totalCount / LIMIT);
+
+  const handleClickPage = (page: number) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    newSearchParams.set(QUERYSTRINGS.PAGE, page.toString());
+
+    setSearchParams(newSearchParams);
+  }
   return (
-    <div>페이지네이션</div>
+    <PaginationStyle>
+      {
+        pages > 0 && (
+          <ol>
+            {
+              Array(pages).fill(0).map((_, index) => (
+                <li>
+                  <Button
+                    key={index}
+                    size='small'
+                    scheme={index + 1 === currentPage ? "primary" : 'normal'}
+                    onClick={() => handleClickPage(index + 1)}
+                  >
+                    {index + 1}
+                  </Button>
+                </li>
+              ))
+            }
+          </ol>
+        )
+      }
+    </PaginationStyle>
   )
 }
 

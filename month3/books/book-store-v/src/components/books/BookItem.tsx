@@ -3,14 +3,16 @@ import type { Book } from '../../models/book.model';
 import { getImgSrc } from '../../utils/image';
 import { formatNumber } from '../../utils/format';
 import { FaHeart } from "react-icons/fa";
+import type { ViewMode } from './BooksViewSwitcher';
 
 interface Props {
   book: Book;
+  view?: ViewMode;
 }
 
-const BookItem = ({ book }: Props) => {
+const BookItem = ({ book, view }: Props) => {
   return (
-    <BookItemStyle>
+    <BookItemStyle view={view}>
       <div className='img'>
         <img src={getImgSrc(book.id)} />
       </div>
@@ -28,6 +30,10 @@ const BookItem = ({ book }: Props) => {
   )
 }
 
-const BookItemStyle = styled.div``; // 생략
+const BookItemStyle = styled.div<Pick<Props, "view">>`
+width: ${({view}) =>
+  view === 'grid' ? 'auto' : '160px'
+}
+`; // 생략
 
 export default BookItem
