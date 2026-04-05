@@ -6,6 +6,8 @@ import { useBook } from "../hooks/useBook";
 import type { BookDetail as IBookDetail } from "../models/book.model";
 import { formatDate, formatNumber } from "../utils/format";
 import EllipsisBox from "../components/common/EllipsisBox";
+import LikeButton from "../components/book/LikeButton";
+import AddToCart from "../components/book/AddToCart";
 
 const bookInfoList: {
   label: string,
@@ -50,7 +52,7 @@ const bookInfoList: {
 
 function BookDetail() {
   const { bookId } = useParams();
-  const { book } = useBook(bookId ?? "");
+  const { book, likeToggle } = useBook(bookId ?? "");
 
   if (!book) return null;
 
@@ -73,8 +75,12 @@ function BookDetail() {
             ))
           }
           <p className="summary">{book.summary}</p>
-          <div className="like">라이크</div>
-          <div className="add-cart">장바구니 넣기</div>
+          <div className="like">
+            <LikeButton book={book} onClick={likeToggle}/>
+          </div>
+          <div className="add-cart">
+            <AddToCart book={book}/>
+          </div>
         </div>
       </header>
       <div className="content">

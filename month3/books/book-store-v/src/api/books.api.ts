@@ -39,3 +39,15 @@ export const fetchBook = async (bookId: string) => {
     const response = await httpClient.get<BookDetail>(url);
     return response.data;
 }
+
+export const likeBook = async (bookId: string) => {
+    const url = generatePath('/books/:bookId', { bookId });
+    const response = await httpClient.post<BookDetail>(url);
+    return response.data;
+}
+
+export const unlikeBook = async (bookId: string) => {
+    const url = generatePath('/books/:bookId', { bookId });
+    const response = await httpClient.delete<BookDetail>(url);
+    return response.data;
+}
