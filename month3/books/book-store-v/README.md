@@ -25,3 +25,7 @@ npm i zustand
 // cra에서 필요하고, vite에서는 다른 방법 써야됨
 npm i -D @craco/craco
 npm i -D craco-alias
+
+// tanstack-query로 바뀌었다는듯, 최신 버전 깔아야 됨
+// npm i react-query
+npm i @tanstack/react-query

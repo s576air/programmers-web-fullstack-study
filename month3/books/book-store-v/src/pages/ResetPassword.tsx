@@ -2,11 +2,9 @@ import { useForm } from "react-hook-form"
 import Title from "../components/common/title"
 import InputText from "../components/common/InputText";
 import Button from "../components/common/Button";
-import { Link, useNavigate } from "react-router-dom";
-import { resetPassword, resetRequest, signup } from "../api/auth.api";
-import { useAlert } from "../hooks/useAlert";
+import { Link } from "react-router-dom";
 import { SignupStyle } from "./SignUp";
-import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface SignupProps {
     email: string;
@@ -14,26 +12,24 @@ export interface SignupProps {
 }
 
 const ResetPassword = () => {
-    const navigate = useNavigate();
-    const { showAlert } = useAlert();
-    const [resetRequested, setResetRequested] = useState(false);
+  const { userResetPassword, userResetRequest, resetRequested } = useAuth();
 
-    const { register, handleSubmit, formState: { errors } } = useForm<SignupProps>();
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupProps>();
 
-    const onSubmit = (data: SignupProps) => {
-        if (resetRequested) {
-            // 초기화
-            resetPassword(data).then(() => {
-                showAlert("비밀번호가 초기화되었습니다.");
-                navigate("/login");
-            })
-        } else {
-            // 요청
-            resetRequest(data).then(() => {
-                setResetRequested(true);
-            });
-        }
+  const onSubmit = (data: SignupProps) => {
+    if (resetRequested) {
+      // 초기화
+      userResetPassword(data);
+    } else {
+      // 요청
+      userResetRequest(data);
     }
+
+    
+  };
 
   return (
     <>
@@ -44,7 +40,7 @@ const ResetPassword = () => {
                     <InputText
                         placeholder="이메일"
                         inputType="email"
-                        {...register("email", { required: true })}
+                        {/*...register("email", { required: true })*/}
                     />
                     {
                         errors.email &&
@@ -56,7 +52,7 @@ const ResetPassword = () => {
                         <InputText
                             placeholder="비밀번호"
                             inputType="password"
-                            {...register("password", { required: true })}
+                            {/*...register("password", { required: true })*/}
                         />
                         {
                             errors.email &&

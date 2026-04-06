@@ -1,38 +1,55 @@
-import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { type Book } from "../models/book.model";
-import { type Pagination } from "../models/pagination.model";
 import { fetchBooks } from "../api/books.api";
-import { QUERYSTRINGS } from "../constants/querystring";
 import { LIMIT } from "../constants/pagination";
+import { QUERYSTRINGS } from "@/constants/querystring";
+import { useQuery } from "@tanstack/react-query";
 
 export const useBooks = () => {
-    const location = useLocation();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
 
-    const [books, setBooks] = useState<Book[]>([]);
-    const [pagination, setPagination] = useState<Pagination>({
-        totalCount: 0,
-        currentPage: 1,
-    })
-    const [isEmpty, setIsEmpty] = useState(true);
+  // react query v4 문법
+  // const { data: booksData } = useQuery(["books", location.search], () =>
+  //   fetchBooks({
+  //     categoryId: params.get(QUERYSTRINGS.CATEGORY_ID)
+  //       ? Number(params.get(QUERYSTRINGS.CATEGORY_ID))
+  //       : undefined,
+  //     news: params.get(QUERYSTRINGS.NEWS) ? true : undefined,
+  //     currentPage: params.get(QUERYSTRINGS.PAGE)
+  //       ? Number(params.get(QUERYSTRINGS.PAGE))
+  //       : 1,
+  //     limit: LIMIT,
+  //   })
+  // );
 
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
+  // react query v5 문법
+  const { data: booksData, isLoading: isBooksLoading } = useQuery({
+    queryKey: ["books", location.search],
+    queryFn: () =>
+      fetchBooks({
+        categoryId: params.get(QUERYSTRINGS.CATEGORY_ID)
+          ? Number(params.get(QUERYSTRINGS.CATEGORY_ID))
+          : undefined,
+        news: params.get(QUERYSTRINGS.NEWS) ? true : undefined,
+        currentPage: params.get(QUERYSTRINGS.PAGE)
+          ? Number(params.get(QUERYSTRINGS.PAGE))
+          : 1,
+        limit: LIMIT,
+      }),
+  });
 
-        fetchBooks({
-            category_id: params.get(QUERYSTRINGS.CATEGORY_ID) ?
-            Number(params.get(QUERYSTRINGS.CATEGORY_ID)) :
-            undefined,
-            news:Boolean(params.get(QUERYSTRINGS.NEWS)),
-            currentPage: params.get(QUERYSTRINGS.PAGE) ?
-            Number(params.get(QUERYSTRINGS.PAGE)) : 1,
-            limit: LIMIT,
-        }).then((res) => {
-            setBooks(res.books);
-            setPagination(res.pagination)
-            setIsEmpty(!res.books.length)
-        })
-    }, [location.search])
+  return {
+    books: booksData?.books,
+    pagination: booksData?.pagination,
+    isEmpty: booksData?.books.length === 0,
+    isBooksLoading
+  };
 
-    return { books, pagination, isEmpty }
-}
+  /*
+  이러면 되는거 아닌가
+  return booksData ? {
+      books: booksData.books,
+      ..
+  } : {}
+  */
+};

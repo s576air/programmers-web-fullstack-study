@@ -12,6 +12,8 @@ import BookDetail from './pages/BookDetail';
 import { Cart } from './pages/Cart';
 import Order from './pages/Order';
 import OrderList from './pages/OrderList';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './api/queryClient';
 
 const routeList = [
   {
@@ -65,9 +67,11 @@ function App() {
   //const [themeName, setThemeName] = useState<ThemeName>("light");
 
   return (
-    <BookStoreThemeProvider>
-      <RouterProvider router={router} />
-    </BookStoreThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <BookStoreThemeProvider>
+        <RouterProvider router={router} />
+      </BookStoreThemeProvider>  
+    </QueryClientProvider>
   );
 }
 
