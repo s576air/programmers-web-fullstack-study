@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react"
-import type { BookDetail } from "../models/book.model";
+import type { BookDetail, BookReviewItem, BookReviewItemWrite } from "../models/book.model";
 import { fetchBook, likeBook, unlikeBook } from "../api/books.api";
 import { useAuthStore } from "../store/authStore";
 import { useAlert } from "./useAlert";
+import { addBookReview, fetchBookReview } from "@/api/review.api";
 
 export const useBook = (bookId: string) => {
     const [book, setBook] = useState<BookDetail | null>(null);
     const { isLoggedIn } = useAuthStore();
     const { showAlert } = useAlert();
+    const [reviews, setReviews] = useState<BookReviewItem[]>([]);
 
     const likeToggle = () => {
         // 권한 확인
@@ -40,10 +42,26 @@ export const useBook = (bookId: string) => {
         }
     }
     useEffect(() => {
+        if (!bookId) return;
+
         fetchBook(bookId).then((book) => {
             setBook(book);
         });
+
+        fetchBookReview(bookId).then((reviews) => {
+            setReviews(reviews);
+        });
     }, [bookId]);
 
-    return { book };
+    const addReview = (data: BookReviewItemWrite) => {
+        if (!book) return;
+
+        addBookReview(book.id.toString(), data).then(() => {
+            fetchBookReview(book.id.toString()).then((reviews) => {
+                setReviews(reviews);
+            });
+        });
+    };
+
+    return { book, likeToggle, reviews, addReview };
 }

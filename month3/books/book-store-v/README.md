@@ -29,3 +29,9 @@ npm i -D craco-alias
 // tanstack-query로 바뀌었다는듯, 최신 버전 깔아야 됨
 // npm i react-query
 npm i @tanstack/react-query
+
+npx msw init public/ --save
+
+// npm i @types/node
+
+npm i @faker-js/faker

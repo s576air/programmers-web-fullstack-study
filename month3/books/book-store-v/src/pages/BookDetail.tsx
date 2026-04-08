@@ -8,6 +8,7 @@ import { formatDate, formatNumber } from "../utils/format";
 import EllipsisBox from "../components/common/EllipsisBox";
 import LikeButton from "../components/book/LikeButton";
 import AddToCart from "../components/book/AddToCart";
+import BookReview from "@/components/book/BookReview";
 
 const bookInfoList: {
   label: string,
@@ -52,7 +53,7 @@ const bookInfoList: {
 
 function BookDetail() {
   const { bookId } = useParams();
-  const { book, likeToggle } = useBook(bookId ?? "");
+  const { book, likeToggle, reviews, addReview } = useBook(bookId ?? "");
 
   if (!book) return null;
 
@@ -60,7 +61,7 @@ function BookDetail() {
     <BookDetailStyle>
       <header className="header">
         <div className="img">
-          <img src={getImgSrc(book.img)} />
+          <img src={getImgSrc(book.img)} alt={book.title}/>
         </div>
         <div className="info">
           <Title size="large" color="text">
@@ -68,7 +69,7 @@ function BookDetail() {
           </Title>
           {
             bookInfoList.map((item) => (
-              <dl>
+              <dl key={item.label}>
                 <dt>{item.label}</dt>
                 <dd>{item.filter ? item.filter(book): book[item.key]}</dd>
               </dl>
@@ -86,10 +87,12 @@ function BookDetail() {
       <div className="content">
         <Title size="medium">상세 설명</Title>
         <EllipsisBox lineLimit={4}>{book.detail}</EllipsisBox>
+
         <Title size="medium">목차</Title>
-        <p className="index">
-          {book.contents}
-        </p>
+        <p className="index">{book.contents}</p>
+
+        <Title size="medium">리뷰</Title>
+        <BookReview reviews={reviews} onAdd={addReview} />
       </div>
     </BookDetailStyle>
   )
