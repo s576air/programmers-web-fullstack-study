@@ -35,3 +35,5 @@ npx msw init public/ --save
 // npm i @types/node
 
 npm i @faker-js/faker
+
+npm i react-slick slick-carousel @types/react-slick
